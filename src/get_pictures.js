@@ -4,12 +4,14 @@ export default class NewGetPictures {
 
   query = null;
   page = 1;
+  perPage = 40
+  totalHits = 0
 
   fetchPhotos() {
     return fetch(
       `${this.#BASE_URL}?key=${this.#API_KEY}&q=${
         this.query
-      }&image_type=photo&orientation=horizontal&safesearch=true&per_page=40&page=${
+      }&image_type=photo&orientation=horizontal&safesearch=true&per_page=${this.perPage}&page=${
         this.page
       }`
     ).then(response => {

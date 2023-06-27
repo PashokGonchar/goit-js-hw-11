@@ -47,14 +47,16 @@ const handleSearchFormSubmit = event => {
 
 const handleLoadMore = () => {
   newGetPictures.page += 1;
+  newGetPictures.totalHits += newGetPictures.totalHits;
 
   newGetPictures
     .fetchPhotos()
     .then(data => {
-      // console.log(data.totalHits)
-      // if (newGetPictures.page === data.totalHits) {
-      //   loadMoreBtnEl.classList.add('is-hidden');
-      // }
+      console.log(data);
+      if (newGetPictures.page*newGetPictures.perPage >= newGetPictures.totalHits) {
+        return loadMoreBtnEl.classList.add('is-hidden');
+      }
+
       galleryEl.insertAdjacentHTML('beforeend', createPicturesCard(data.hits));
 
       loadMoreBtnEl.classList.remove('is-hidden');
