@@ -13,6 +13,9 @@ const galleryEl = document.querySelector('.gallery');
 const inputEl = searchFormEl.firstElementChild;
 const loadMoreBtnEl = document.querySelector('.btn-primary');
 
+let totalHits = 0
+
+
 const handleSearchFormSubmit = event => {
   event.preventDefault();
 
@@ -23,11 +26,15 @@ const handleSearchFormSubmit = event => {
   newGetPictures.query = inputEl.value;
   inputEl.value = '';
   galleryEl.innerHTML = '';
+  newGetPictures.page = 1;
 
   newGetPictures
     .fetchPhotos()
     .then(data => {
       // console.log(data)
+      totalHits = data.totalHits;
+      
+
       if (data.hits.length === 0) {
         Notiflix.Notify.failure(
           'Sorry, there are no images matching your search query. Please try again.'
@@ -40,26 +47,39 @@ const handleSearchFormSubmit = event => {
 
       galleryEl.innerHTML = createPicturesCard(data.hits);
 
-      loadMoreBtnEl.classList.remove('is-hidden');
+      if (
+        newGetPictures.page * newGetPictures.perPage >=
+        totalHits
+      ) {
+        loadMoreBtnEl.classList.add('is-hidden');
+        Notiflix.Notify.failure(
+          "We're sorry, but you've reached the end of search results."
+        );
+      } else {
+        loadMoreBtnEl.classList.remove('is-hidden');
+      }
     })
     .catch(console.warn);
 };
 
 const handleLoadMore = () => {
   newGetPictures.page += 1;
-  newGetPictures.totalHits += newGetPictures.totalHits;
 
   newGetPictures
     .fetchPhotos()
     .then(data => {
-      console.log(data);
-      if (newGetPictures.page*newGetPictures.perPage >= newGetPictures.totalHits) {
-        return loadMoreBtnEl.classList.add('is-hidden');
-      }
 
       galleryEl.insertAdjacentHTML('beforeend', createPicturesCard(data.hits));
 
-      loadMoreBtnEl.classList.remove('is-hidden');
+      if (
+        newGetPictures.page * newGetPictures.perPage >=
+        totalHits
+      ) {
+        loadMoreBtnEl.classList.add('is-hidden');
+        Notiflix.Notify.failure("We're sorry, but you've reached the end of search results.");
+      } else {
+        loadMoreBtnEl.classList.remove('is-hidden');
+      }
     })
     .catch(console.warn);
 };
