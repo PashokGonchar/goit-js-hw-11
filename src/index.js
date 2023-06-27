@@ -13,8 +13,7 @@ const galleryEl = document.querySelector('.gallery');
 const inputEl = searchFormEl.firstElementChild;
 const loadMoreBtnEl = document.querySelector('.btn-primary');
 
-let totalHits = 0
-
+let totalHits = 0;
 
 const handleSearchFormSubmit = event => {
   event.preventDefault();
@@ -33,7 +32,10 @@ const handleSearchFormSubmit = event => {
     .then(data => {
       // console.log(data)
       totalHits = data.totalHits;
-      
+
+      if (totalHits !== 0) {
+        Notiflix.Notify.success(`"Hooray! We found ${totalHits} images."`);
+      }
 
       if (data.hits.length === 0) {
         Notiflix.Notify.failure(
@@ -47,10 +49,9 @@ const handleSearchFormSubmit = event => {
 
       galleryEl.innerHTML = createPicturesCard(data.hits);
 
-      if (
-        newGetPictures.page * newGetPictures.perPage >=
-        totalHits
-      ) {
+      lightbox.refresh();
+
+      if (newGetPictures.page * newGetPictures.perPage >= totalHits) {
         loadMoreBtnEl.classList.add('is-hidden');
         Notiflix.Notify.failure(
           "We're sorry, but you've reached the end of search results."
@@ -68,15 +69,13 @@ const handleLoadMore = () => {
   newGetPictures
     .fetchPhotos()
     .then(data => {
-
       galleryEl.insertAdjacentHTML('beforeend', createPicturesCard(data.hits));
 
-      if (
-        newGetPictures.page * newGetPictures.perPage >=
-        totalHits
-      ) {
+      if (newGetPictures.page * newGetPictures.perPage >= totalHits) {
         loadMoreBtnEl.classList.add('is-hidden');
-        Notiflix.Notify.failure("We're sorry, but you've reached the end of search results.");
+        Notiflix.Notify.failure(
+          "We're sorry, but you've reached the end of search results."
+        );
       } else {
         loadMoreBtnEl.classList.remove('is-hidden');
       }
@@ -87,3 +86,9 @@ const handleLoadMore = () => {
 searchFormEl.addEventListener('submit', handleSearchFormSubmit);
 
 loadMoreBtnEl.addEventListener('click', handleLoadMore);
+
+let lightbox = new SimpleLightbox('a', {
+  captions: true,
+  captionsData: 'alt',
+  captionDelay: 200,
+});
