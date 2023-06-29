@@ -9,34 +9,26 @@ export default class NewGetPictures {
   perPage = 40;
   totalHits = 0;
 
-    fetchPhotos() {
-      return fetch(
-        `${this.#BASE_URL}?key=${this.#API_KEY}&q=${
-          this.query
-        }&image_type=photo&orientation=horizontal&safesearch=true&per_page=${
-          this.perPage
-        }&page=${this.page}`
-      ).then(response => {
-        if (!response.ok) {
-          throw Error(response.status);
-        }
+  async fetchPhotos() {
+    const response = await axios.get(`${this.#BASE_URL}`, {
+      params: {
+        key: this.#API_KEY,
+        q: this.query,
+        image_type: "photo",
+        orientation: "horizontal",
+        safesearch: true,
+        page: this.page,
+        per_page: this.perPage,
+      },
+    });
+    try {
+      const data = response.data;
 
-        return response.json();
-      });
+      return data
+    } catch (error) {
+      console.log(error)
     }
   }
+}
 
-  // fetchPhotos() {
-  //   return axios.get(`${this.#BASE_URL}`, {
-  //     params: {
-  //       key: this.#API_KEY,
-  //       q: this.query,
-  //       image_type: photo,
-  //       orientation: horizontal,
-  //       safesearch: true,
-  //       page: this.page,
-  //       per_page: this.perPage,
-  //     },
-  //   });
-  // }
 
